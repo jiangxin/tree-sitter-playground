@@ -98,6 +98,9 @@ class MainWindow(QMainWindow):
         # 可以在这里添加更多的扩展名和对应的语言类型
         else:
             self.language = "unknown"
+        # Change title of Language menu
+        if self.language:
+            self.set_language(self.language)
 
     def set_language(self, language):
         if self.selected_language_action:
