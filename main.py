@@ -15,6 +15,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.language = None  # 添加语言属性
+        self.supported_languages = ["c/c++", "python", "java"]  # 添加支持的语言列表
+
         # 设置窗口标题
         self.setWindowTitle("PySide 编辑器")
 
@@ -26,8 +29,6 @@ class MainWindow(QMainWindow):
 
         # 设置窗口大小
         self.resize(800, 600)
-
-        self.language = None  # 添加语言属性
 
     def create_menus(self):
         # 获取菜单栏
@@ -43,8 +44,12 @@ class MainWindow(QMainWindow):
 
         # Languages 菜单
         languages_menu = menubar.addMenu("&Languages")
-        python_action = QAction("Python", self)
-        languages_menu.addAction(python_action)
+        for language in self.supported_languages:
+            action = QAction(language, self)
+            action.triggered.connect(
+                lambda checked, lang=language: self.set_language(lang)
+            )
+            languages_menu.addAction(action)
 
         # View 菜单
         menubar.addMenu("&View")
@@ -90,6 +95,10 @@ class MainWindow(QMainWindow):
         # 可以在这里添加更多的扩展名和对应的语言类型
         else:
             self.language = "unknown"
+
+    def set_language(self, language):
+        self.language = language
+        print(f"Selected language: {self.language}")
 
 
 def main():
