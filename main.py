@@ -82,6 +82,9 @@ class MainWindow(QMainWindow):
         self.left_edit.setAcceptRichText(True)
         self.left_edit.setLineWrapMode(QTextEdit.NoWrap)
 
+        # 连接光标位置变化信号到槽函数
+        self.left_edit.cursorPositionChanged.connect(self.print_cursor_line_number)
+
         # 添加到布局
         layout.addWidget(self.left_edit)
         layout.addWidget(self.right_edit)
@@ -148,6 +151,26 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 print(f"Error highlighting code: {e}")
                 self.left_edit.setPlainText(code)
+
+    def print_cursor_line_number(self):
+        cursor = self.left_edit.textCursor()
+        if cursor.hasSelection():
+            start = cursor.selectionStart()
+            end = cursor.selectionEnd()
+            cursor.setPosition(start)
+            start_line = cursor.blockNumber() + 1
+            start_column = cursor.columnNumber()
+            cursor.setPosition(end)
+            end_line = cursor.blockNumber() + 1
+            end_column = cursor.columnNumber()
+            print(
+                f"Selected text from line {start_line}, column {start_column} to line {end_line}, column {end_column}"
+            )
+        else:
+            line_number = (
+                cursor.blockNumber() + 1
+            )  # blockNumber() 返回的是从0开始的行号
+            print(f"Cursor is on line: {line_number}")
 
 
 def main():
