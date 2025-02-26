@@ -1,0 +1,9 @@
+# 包含生产模式的依赖
+-r requirements.txt
+
+# 代码格式化和 lint 工具
+ruff>=0.0.280
+black>=23.1.0
+isort>=5.11.4
+mypy>=1.0.0
+flake8>=6.0.0
