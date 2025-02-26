@@ -9,6 +9,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import HtmlFormatter
+from pygments.styles import get_style_by_name
 
 
 class MainWindow(QMainWindow):
@@ -74,6 +78,10 @@ class MainWindow(QMainWindow):
         self.left_edit = QTextEdit()
         self.right_edit = QTextEdit()
 
+        # 设置接受富文本格式
+        self.left_edit.setAcceptRichText(True)
+        self.left_edit.setLineWrapMode(QTextEdit.NoWrap)
+
         # 添加到布局
         layout.addWidget(self.left_edit)
         layout.addWidget(self.right_edit)
@@ -88,6 +96,7 @@ class MainWindow(QMainWindow):
                 content = file.read()
                 self.left_edit.setPlainText(content)
             self.set_language_from_extension(file_path)  # 设置语言类型
+            self.highlight_code(content)  # 设置语法高亮
 
     def set_language_from_extension(self, file_path):
         import os
@@ -96,6 +105,10 @@ class MainWindow(QMainWindow):
         if ext == ".py":
             self.language = "python"
         # 可以在这里添加更多的扩展名和对应的语言类型
+        elif ext in [".c", ".cpp", ".cc", ".cxx"]:
+            self.language = "cpp"
+        elif ext == ".java":
+            self.language = "java"
         else:
             self.language = "unknown"
         # Change title of Language menu
@@ -114,6 +127,27 @@ class MainWindow(QMainWindow):
                         self.selected_language_action = sub_action
                         break
         self.language_menu_title.setText(f"&Language: {language}")  # 更新菜单标题
+        self.highlight_code(self.left_edit.toPlainText())  # 设置语法高亮
+
+    def highlight_code(self, code):
+        if self.language:
+            try:
+                lexer = get_lexer_by_name(self.language, stripall=True)
+                formatter = HtmlFormatter(
+                    # 可用的样式包括：'monokai', 'friendly', 'colorful', 'default', 'murphy', 'vs', 'trac', 'tango', 'fruity', 等
+                    style=get_style_by_name("colorful"),
+                    # 生成完整的 HTML 文档
+                    full=True,
+                    # 使用内联样式而不是类
+                    noclasses=True,
+                    # 不显示行号。如果显示行号，会导致光标选择位置和原始文本位置不一致
+                    linenos=False,
+                )
+                highlighted_code = highlight(code, lexer, formatter)
+                self.left_edit.setHtml(highlighted_code)
+            except Exception as e:
+                print(f"Error highlighting code: {e}")
+                self.left_edit.setPlainText(code)
 
 
 def main():

@@ -1,3 +1,4 @@
 PySide6>=6.0.0
 tree-sitter>=0.20.0
 tree-sitter-language-pack>=0.1.0
+pygments>=2.14.0  # 添加 Pygments 依赖
