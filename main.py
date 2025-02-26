@@ -27,6 +27,8 @@ class MainWindow(QMainWindow):
         # 设置窗口大小
         self.resize(800, 600)
 
+        self.language = None  # 添加语言属性
+
     def create_menus(self):
         # 获取菜单栏
         menubar = self.menuBar()
@@ -77,6 +79,17 @@ class MainWindow(QMainWindow):
             with open(file_path, "r", encoding="utf-8") as file:
                 content = file.read()
                 self.left_edit.setPlainText(content)
+            self.set_language_from_extension(file_path)  # 设置语言类型
+
+    def set_language_from_extension(self, file_path):
+        import os
+
+        _, ext = os.path.splitext(file_path)
+        if ext == ".py":
+            self.language = "python"
+        # 可以在这里添加更多的扩展名和对应的语言类型
+        else:
+            self.language = "unknown"
 
 
 def main():
