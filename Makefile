@@ -1,3 +1,5 @@
+all: style lint
+	
 # 格式化代码
 style:
 	black .
