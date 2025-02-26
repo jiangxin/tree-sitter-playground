@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):
 
         self.language = None  # 添加语言属性
         self.supported_languages = ["c/c++", "python", "java"]  # 添加支持的语言列表
+        self.selected_language_action = None  # 添加当前选中的语言动作属性
 
         # 设置窗口标题
         self.setWindowTitle("PySide 编辑器")
@@ -42,14 +43,14 @@ class MainWindow(QMainWindow):
         open_action.triggered.connect(self.open_file)
         file_menu.addAction(open_action)
 
-        # Languages 菜单
-        languages_menu = menubar.addMenu("&Languages")
+        # Language 菜单
+        language_menu = menubar.addMenu("&Language")
         for language in self.supported_languages:
-            action = QAction(language, self)
+            action = QAction(language, self, checkable=True)
             action.triggered.connect(
                 lambda checked, lang=language: self.set_language(lang)
             )
-            languages_menu.addAction(action)
+            language_menu.addAction(action)
 
         # View 菜单
         menubar.addMenu("&View")
@@ -97,7 +98,16 @@ class MainWindow(QMainWindow):
             self.language = "unknown"
 
     def set_language(self, language):
+        if self.selected_language_action:
+            self.selected_language_action.setChecked(False)
         self.language = language
+        for action in self.menuBar().actions():
+            if action.text() == "&Language":
+                for sub_action in action.menu().actions():
+                    if sub_action.text() == language:
+                        sub_action.setChecked(True)
+                        self.selected_language_action = sub_action
+                        break
         print(f"Selected language: {self.language}")
 
 
