@@ -1,5 +1,12 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QTextEdit, QWidget, QHBoxLayout
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QTextEdit,
+    QWidget,
+    QHBoxLayout,
+    QFileDialog,
+)
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 
@@ -26,9 +33,11 @@ class MainWindow(QMainWindow):
 
         # File 菜单
         file_menu = menubar.addMenu("&File")
-        new_action = QAction("&New", self)
-        new_action.setShortcut("Ctrl+N")
-        file_menu.addAction(new_action)
+        # 添加 Open 动作
+        open_action = QAction("&Open", self)
+        open_action.setShortcut("Ctrl+O")
+        open_action.triggered.connect(self.open_file)
+        file_menu.addAction(open_action)
 
         # Languages 菜单
         languages_menu = menubar.addMenu("&Languages")
@@ -58,6 +67,16 @@ class MainWindow(QMainWindow):
         # 添加到布局
         layout.addWidget(self.left_edit)
         layout.addWidget(self.right_edit)
+
+    def open_file(self):
+        options = QFileDialog.Options()
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Open File", "", "All Files (*);;Text Files (*.txt)", options=options
+        )
+        if file_path:
+            with open(file_path, "r", encoding="utf-8") as file:
+                content = file.read()
+                self.left_edit.setPlainText(content)
 
 
 def main():
