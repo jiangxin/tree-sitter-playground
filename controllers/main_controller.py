@@ -3,6 +3,7 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 from pygments.styles import get_style_by_name
+from PySide6.QtGui import QTextCursor
 
 from models.ast import AST  # 添加导入语句
 from models.document import Document
@@ -19,7 +20,7 @@ class MainController:
         self.window.open_file_event.connect(self.open_file)
         self.window.language_changed_event.connect(self.set_language)
         self.window.text_changed_event.connect(self.on_text_changed)
-        self.window.doc_edit_cursor_event.connect(self.print_cursor_position)
+        self.window.doc_edit_cursor_event.connect(self.highlight_ast_region)
         self.window.doc_edit.textChanged.connect(
             lambda: self.window.text_changed_event.emit(
                 self.window.doc_edit.toPlainText()
@@ -48,7 +49,7 @@ class MainController:
             self.document.set_language_from_extension()
             self.window.doc_edit.setPlainText(self.document.content)
             self.set_language(self.document.language)
-            self.window.doc_edit_cursor_event.connect(self.print_cursor_position)
+            self.window.doc_edit_cursor_event.connect(self.highlight_ast_region)
 
     def set_language(self, language):
         self.document.language = language
@@ -85,7 +86,7 @@ class MainController:
         ast_text = self.ast.get_plain_text()
         self.window.ast_edit.setPlainText(ast_text)
 
-    def print_cursor_position(self):
+    def highlight_ast_region(self):
         cursor = self.window.doc_edit.textCursor()
         if cursor.hasSelection():
             end = cursor.selectionEnd()
@@ -99,3 +100,19 @@ class MainController:
         print(
             f"Code line: {line_number}, column: {column_number}, Matched AST index: {match_index}"
         )
+
+        # 新增代码：在 ast_edit 中选中对应的行
+        if match_index is not None:
+            ast_edit = self.window.ast_edit
+            ast_edit_lines = ast_edit.toPlainText().split("\n")
+            if 0 <= match_index < len(ast_edit_lines):
+                ast_edit_cursor = ast_edit.textCursor()
+                ast_edit_cursor.movePosition(QTextCursor.Start)
+                for _ in range(match_index):
+                    ast_edit_cursor.movePosition(QTextCursor.NextBlock)
+                ast_edit_cursor.movePosition(QTextCursor.StartOfLine)
+                ast_edit_cursor.movePosition(
+                    QTextCursor.EndOfLine, QTextCursor.KeepAnchor
+                )
+                ast_edit.setTextCursor(ast_edit_cursor)
+                ast_edit.ensureCursorVisible()
