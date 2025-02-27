@@ -88,18 +88,14 @@ class MainController:
     def print_cursor_position(self):
         cursor = self.window.doc_edit.textCursor()
         if cursor.hasSelection():
-            start = cursor.selectionStart()
             end = cursor.selectionEnd()
-            cursor.setPosition(start)
-            start_line = cursor.blockNumber() + 1
-            start_column = cursor.columnNumber()
             cursor.setPosition(end)
-            end_line = cursor.blockNumber() + 1
-            end_column = cursor.columnNumber()
-            print(
-                f"Selected text from line {start_line}, column {start_column} "
-                f"to line {end_line}, column {end_column}"
-            )
+            line_number = cursor.blockNumber()
+            column_number = cursor.columnNumber()
         else:
-            line_number = cursor.blockNumber() + 1
-            print(f"Cursor is on line: {line_number}")
+            line_number = cursor.blockNumber()
+            column_number = cursor.columnNumber()
+        match_index = self.ast.get_match_ast_line(line_number, column_number)
+        print(
+            f"Code line: {line_number}, column: {column_number}, Matched AST index: {match_index}"
+        )
