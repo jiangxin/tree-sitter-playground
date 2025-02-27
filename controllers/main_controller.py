@@ -94,6 +94,7 @@ class MainController:
         self.window.ast_edit.blockSignals(False)
 
     def highlight_ast_region(self):
+        self.window.ast_edit.blockSignals(True)
         cursor = self.window.doc_edit.textCursor()
         if cursor.hasSelection():
             cursor.setPosition(cursor.selectionEnd())
@@ -103,9 +104,6 @@ class MainController:
             line_number = cursor.blockNumber()
             column_number = cursor.columnNumber()
         match_index = self.ast.get_match_ast_line(line_number, column_number)
-        print(
-            f"Code line: {line_number}, column: {column_number}, Matched AST index: {match_index}"
-        )
 
         # 新增代码：在 ast_edit 中选中对应的行
         if match_index is not None:
@@ -122,6 +120,7 @@ class MainController:
                 )
                 ast_edit.setTextCursor(ast_edit_cursor)
                 ast_edit.ensureCursorVisible()
+        self.window.ast_edit.blockSignals(False)
 
     def update_font_size(self, size):
         self.window.set_font_size(size)
@@ -129,7 +128,23 @@ class MainController:
     def on_ast_edit_cursor_changed(self):
         cursor = self.window.ast_edit.textCursor()
         line_number = cursor.blockNumber()
-        line_range = self.ast.line_range.get(line_number, [-1, -1, -1, -1])
-        print(
-            f"AST line: {line_number}, Line range: {line_range}"
-        )  # 打印 ast_edit 对应行的 line_range 的值
+        start_line, start_column, end_line, end_column = self.ast.get_code_range(
+            line_number
+        )
+        if start_line < 0:
+            return
+
+        self.window.doc_edit.blockSignals(True)
+        doc_edit = self.window.doc_edit
+        doc_edit_cursor = doc_edit.textCursor()
+        doc_edit_cursor.setPosition(
+            doc_edit.document().findBlockByLineNumber(start_line).position()
+            + start_column
+        )
+        end_position = (
+            doc_edit.document().findBlockByLineNumber(end_line).position() + end_column
+        )
+        doc_edit_cursor.setPosition(end_position, QTextCursor.KeepAnchor)
+        doc_edit.setTextCursor(doc_edit_cursor)
+        doc_edit.ensureCursorVisible()
+        self.window.doc_edit.blockSignals(False)
