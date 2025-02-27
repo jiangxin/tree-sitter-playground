@@ -78,7 +78,10 @@ class MainController:
 
         try:
             self.window.doc_edit.blockSignals(True)
-            lexer = get_lexer_by_name(self.document.language, stripall=True)
+            language = self.document.language
+            if language == "c_sharp":
+                language = "csharp"
+            lexer = get_lexer_by_name(language, stripall=True)
             formatter = HtmlFormatter(
                 style=get_style_by_name("colorful"),
                 full=True,
