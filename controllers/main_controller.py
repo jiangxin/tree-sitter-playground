@@ -137,13 +137,22 @@ class MainController:
         self.window.doc_edit.blockSignals(True)
         doc_edit = self.window.doc_edit
         doc_edit_cursor = doc_edit.textCursor()
-        doc_edit_cursor.setPosition(
-            doc_edit.document().findBlockByLineNumber(start_line).position()
-            + start_column
+
+        # 获取文本块并转换为 bytes 以计算正确的长度
+        block = doc_edit.document().findBlockByLineNumber(start_line)
+        block_bytes = bytes(block.text(), "utf-8", errors="replace")
+        start_position = block.position() + len(
+            block_bytes[:start_column].decode("utf-8", errors="replace")
         )
-        end_position = (
-            doc_edit.document().findBlockByLineNumber(end_line).position() + end_column
+
+        # 修改: 从 end_line 获取文本块以计算 end_position
+        end_block = doc_edit.document().findBlockByLineNumber(end_line)
+        end_block_bytes = bytes(end_block.text(), "utf-8", errors="replace")
+        end_position = end_block.position() + len(
+            end_block_bytes[:end_column].decode("utf-8", errors="replace")
         )
+
+        doc_edit_cursor.setPosition(start_position)
         doc_edit_cursor.setPosition(end_position, QTextCursor.KeepAnchor)
         doc_edit.setTextCursor(doc_edit_cursor)
         doc_edit.ensureCursorVisible()
