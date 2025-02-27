@@ -78,3 +78,40 @@ class AST:
                 stack.append((child, depth + 1, original_id))
 
         return "\n".join(lines)
+
+    def get_match_ast_line(self, line: int, column: int) -> Optional[int]:
+        """Find the closest line_range index for the given line and column."""
+        min_row_distance = -1
+        min_col_distance = -1
+        closest_index = None
+
+        for index, (
+            start_line,
+            start_col,
+            end_line,
+            end_col,
+        ) in self.line_range.items():
+            if line < start_line or line > end_line:
+                continue
+            if line == start_line and column < start_col:
+                continue
+            if line == end_line and column > end_col:
+                continue
+
+            row_distance = abs(end_line - start_line)
+            if min_row_distance < 0 or row_distance < min_row_distance:
+                min_row_distance = row_distance
+                closest_index = index
+                continue
+            elif row_distance > min_row_distance:
+                continue
+
+            col_distance = abs(end_col - start_col)
+            if min_col_distance < 0 or col_distance < min_col_distance:
+                min_col_distance = col_distance
+                closest_index = index
+                continue
+            elif col_distance > min_col_distance:
+                continue
+
+        return closest_index
