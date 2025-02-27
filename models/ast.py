@@ -13,6 +13,7 @@ class AST:
         self.language: Optional[Language] = None
         self.parser: Optional[Parser] = Parser()
         self.tree: Optional[Tree] = None
+        self.line_range = {}  # 添加 line_range 字段
 
     def load(self, language_name: str, content):
         self.content = (
@@ -38,6 +39,7 @@ class AST:
 
         lines: List[str] = []
         stack = [(self.tree.root_node, 0, 0)]  # (node, depth, id)
+        self.line_range = {}  # 初始化 line_range 字典
 
         while stack:
             node, depth, index = stack.pop()
@@ -47,6 +49,15 @@ class AST:
             field_name = (
                 node.parent.field_name_for_child(index) if node.parent else None
             )
+
+            # 存储 start_point 和 end_point 到 line_range
+            line_number = len(lines)
+            self.line_range[line_number] = [
+                start_point[0],
+                start_point[1],
+                end_point[0],
+                end_point[1],
+            ]
 
             lines.append(
                 "{}{}{}{} [{}, {}] - [{}, {}]".format(
