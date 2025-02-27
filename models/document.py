@@ -1,5 +1,7 @@
+import os
 from dataclasses import dataclass
 from typing import Optional
+from .lang_map import lang_map
 
 
 @dataclass
@@ -11,18 +13,7 @@ class Document:
     def set_language_from_extension(self):
         if not self.file_path:
             return
-
-        import os
-
         _, ext = os.path.splitext(self.file_path)
-
-        extension_map = {
-            ".py": "python",
-            ".c": "cpp",
-            ".cpp": "cpp",
-            ".cc": "cpp",
-            ".cxx": "cpp",
-            ".java": "java",
-        }
-
-        self.language = extension_map.get(ext, "unknown")
+        if ext not in lang_map:
+            raise Exception(f"unknown file extension: {ext}")
+        self.language = lang_map.get(ext)

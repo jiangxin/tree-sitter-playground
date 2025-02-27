@@ -1,4 +1,7 @@
-from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import (
+    QFileDialog,
+    QMessageBox,
+)
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
@@ -44,18 +47,24 @@ class MainController:
             "All Files (*);;Text Files (*.txt)",
             options=options,
         )
-
-        if file_path:
+        if not file_path:
+            return
+        self.document.file_path = file_path
+        try:
             with open(file_path, "r", encoding="utf-8") as file:
                 self.document.content = file.read()
-                self.document.file_path = file_path
-
+        except Exception as e:
+            QMessageBox.critical(self.window, "ERROR", f"Fail to open file: {e}")
+            return
+        try:
             self.window.doc_edit.blockSignals(True)
             self.document.set_language_from_extension()
             self.window.doc_edit.setPlainText(self.document.content)
             self.window.doc_edit.blockSignals(False)
             self.set_language(self.document.language)
             self.ast_edit_load(self.document.language, self.document.content)
+        except Exception as e:
+            QMessageBox.critical(self.window, "ERROR", f"Error highlighting code: {e}")
 
     def set_language(self, language):
         self.document.language = language

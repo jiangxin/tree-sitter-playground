@@ -11,6 +11,7 @@ from PySide6.QtGui import (
 )
 from PySide6.QtCore import Signal
 from .doc_view import DocView
+from models.lang_map import lang_map
 
 
 class MainWindow(QMainWindow):
@@ -23,7 +24,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.supported_languages = ["c/c++", "python", "java"]
+        self.supported_languages = sorted(set(lang_map.values()))
         self.selected_language_action = None
         self.language_menu_title = None
         self.font_size = 18
