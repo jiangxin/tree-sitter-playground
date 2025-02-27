@@ -4,6 +4,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 from pygments.styles import get_style_by_name
 
+from models.ast import AST  # 添加导入语句
 from models.document import Document
 from views.main_window import MainWindow
 
@@ -12,6 +13,7 @@ class MainController:
     def __init__(self, window: MainWindow):
         self.window = window
         self.document = Document()
+        self.ast = AST()  # 初始化 AST 对象
 
         # 连接信号
         self.window.open_file_event.connect(self.open_file)
@@ -52,6 +54,7 @@ class MainController:
         self.document.language = language
         self.window.update_language_menu(language)
         self.highlight_code()
+        self.ast_edit_load(self.document.language, self.document.content)
 
     def highlight_code(self):
         if not self.document.language:
@@ -76,6 +79,11 @@ class MainController:
     def on_text_changed(self, text):
         self.document.content = text
         self.highlight_code()
+
+        # 新增代码：解析 AST 并显示在 ast_edit 中
+        self.ast.load(self.document.language, text)
+        ast_text = self.ast.get_plain_text()
+        self.window.ast_edit.setPlainText(ast_text)
 
     def print_cursor_position(self):
         cursor = self.window.doc_edit.textCursor()
