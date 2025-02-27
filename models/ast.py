@@ -115,3 +115,7 @@ class AST:
                 continue
 
         return closest_index
+
+    def get_code_range(self, line_number: int) -> List[int]:
+        """Return the start and end line and column numbers for the given line number."""
+        return self.line_range.get(line_number, [-1, -1, -1, -1])
