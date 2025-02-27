@@ -45,11 +45,12 @@ class MainController:
                 self.document.content = file.read()
                 self.document.file_path = file_path
 
-            self.window.doc_edit_cursor_event.disconnect()
+            self.window.doc_edit.blockSignals(True)
             self.document.set_language_from_extension()
             self.window.doc_edit.setPlainText(self.document.content)
+            self.window.doc_edit.blockSignals(False)
             self.set_language(self.document.language)
-            self.window.doc_edit_cursor_event.connect(self.highlight_ast_region)
+            self.ast_edit_load(self.document.language, self.document.content)
 
     def set_language(self, language):
         self.document.language = language
@@ -62,7 +63,7 @@ class MainController:
             return
 
         try:
-            self.window.text_changed_event.disconnect()
+            self.window.doc_edit.blockSignals(True)
             lexer = get_lexer_by_name(self.document.language, stripall=True)
             formatter = HtmlFormatter(
                 style=get_style_by_name("colorful"),
@@ -72,25 +73,25 @@ class MainController:
             )
             highlighted_code = highlight(self.document.content, lexer, formatter)
             self.window.doc_edit.setHtml(highlighted_code)
-            self.window.text_changed_event.connect(self.on_text_changed)
-        except Exception as e:
-            print(f"Error highlighting code: {e}")
-            self.window.doc_edit.setPlainText(self.document.content)
+        finally:
+            self.window.doc_edit.blockSignals(False)
 
     def on_text_changed(self, text):
         self.document.content = text
         self.highlight_code()
+        self.ast_edit_load(self.document.language, self.document.content)
 
-        # 新增代码：解析 AST 并显示在 ast_edit 中
-        self.ast.load(self.document.language, text)
+    def ast_edit_load(self, language, content):
+        self.ast.load(language, content)
         ast_text = self.ast.get_plain_text()
+        self.window.ast_edit.blockSignals(True)
         self.window.ast_edit.setPlainText(ast_text)
+        self.window.ast_edit.blockSignals(False)
 
     def highlight_ast_region(self):
         cursor = self.window.doc_edit.textCursor()
         if cursor.hasSelection():
-            end = cursor.selectionEnd()
-            cursor.setPosition(end)
+            cursor.setPosition(cursor.selectionEnd())
             line_number = cursor.blockNumber()
             column_number = cursor.columnNumber()
         else:
