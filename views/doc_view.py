@@ -1,6 +1,4 @@
-from PySide6.QtWidgets import (
-    QTextEdit,
-)
+from PySide6.QtWidgets import QTextEdit
 
 
 class DocView(QTextEdit):

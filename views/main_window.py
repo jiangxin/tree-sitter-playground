@@ -4,7 +4,11 @@ from PySide6.QtWidgets import (
     QWidget,
     QHBoxLayout,
 )
-from PySide6.QtGui import QAction
+from PySide6.QtGui import (
+    QAction,
+    QActionGroup,
+    QFont,
+)
 from PySide6.QtCore import Signal
 from .doc_view import DocView
 
@@ -15,12 +19,14 @@ class MainWindow(QMainWindow):
     language_changed_event: Signal = Signal(str)
     text_changed_event: Signal = Signal(str)
     doc_edit_cursor_event: Signal = Signal()
+    font_size_changed_event: Signal = Signal(int)
 
     def __init__(self):
         super().__init__()
         self.supported_languages = ["c/c++", "python", "java"]
         self.selected_language_action = None
         self.language_menu_title = None
+        self.font_size = 18
 
         self.setup_ui()
 
@@ -30,6 +36,7 @@ class MainWindow(QMainWindow):
 
         self.create_menus()
         self.create_editors()
+        self.set_font_size(self.font_size)
 
     def create_menus(self):
         menubar = self.menuBar()
@@ -51,10 +58,31 @@ class MainWindow(QMainWindow):
             )
             language_menu.addAction(action)
 
+        # Size 菜单
+        size_menu = menubar.addMenu("&Size")
+        size_group = QActionGroup(self, exclusive=True)
+        for size in range(10, 39, 2):  # 从 10 到 38，步长为 2
+            action = QAction(str(size), self, checkable=True)
+            action.triggered.connect(
+                lambda checked, s=size: self.font_size_changed_event.emit(s)
+            )
+            size_group.addAction(action)
+            size_menu.addAction(action)
+            if size == self.font_size:
+                action.setChecked(True)
+        # size_group.triggered.connect(lambda action: self.font_size_changed_event.emit(int(action.text())))
+
         # View 和 Help 菜单
         menubar.addMenu("&View")
         help_menu = menubar.addMenu("&Help")
         help_menu.addAction(QAction("&About", self))
+
+    def set_font_size(self, size):
+        self.font_size = size
+        font = QFont()
+        font.setPointSize(size)
+        self.doc_edit.setFont(font)
+        self.ast_edit.setFont(font)
 
     def create_editors(self):
         central_widget = QWidget()

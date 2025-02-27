@@ -29,6 +29,7 @@ class MainController:
         self.window.doc_edit.cursorPositionChanged.connect(
             self.window.doc_edit_cursor_event.emit
         )
+        self.window.font_size_changed_event.connect(self.update_font_size)
 
     def open_file(self):
         options = QFileDialog.Options()
@@ -117,3 +118,6 @@ class MainController:
                 )
                 ast_edit.setTextCursor(ast_edit_cursor)
                 ast_edit.ensureCursorVisible()
+
+    def update_font_size(self, size):
+        self.window.set_font_size(size)
