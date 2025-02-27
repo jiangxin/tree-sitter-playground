@@ -1,4 +1,8 @@
-from tree_sitter import Language, Parser, Tree
+from tree_sitter import (
+    Language,
+    Parser,
+    Tree,
+)
 import tree_sitter_language_pack
 from typing import Optional, List
 
@@ -33,19 +37,33 @@ class AST:
             return ""
 
         lines: List[str] = []
+        stack = [(self.tree.root_node, 0, 0)]  # (node, depth, id)
 
-        def traverse(node, parent=None):
+        while stack:
+            node, depth, index = stack.pop()
             start_point = node.start_point
             end_point = node.end_point
             node_type = node.type
-            node_name = node.text.decode("utf8", errors="replace") if node.text else ""
-            lines.append(
-                f"Type: {node_type}, Name: {node_name}, "
-                f"Start Line: {start_point[0] + 1}, Start Column: {start_point[1]}, "
-                f"End Line: {end_point[0] + 1}, End Column: {end_point[1]}"
+            field_name = (
+                node.parent.field_name_for_child(index) if node.parent else None
             )
-            for child in node.children:
-                traverse(child, node)
 
-        traverse(self.tree.root_node)
+            lines.append(
+                "{}{}{}{} [{}, {}] - [{}, {}]".format(
+                    "  " * depth,
+                    f"{field_name}: " if field_name else "",
+                    "" if node.is_named else ". ",
+                    node_type,
+                    start_point[0] + 1,
+                    start_point[1],
+                    end_point[0] + 1,
+                    end_point[1],
+                )
+            )
+
+            # Add children to the stack with incremented depth and original index
+            for id, child in enumerate(reversed(node.children)):
+                original_id = len(node.children) - 1 - id
+                stack.append((child, depth + 1, original_id))
+
         return "\n".join(lines)
