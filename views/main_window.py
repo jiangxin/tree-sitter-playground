@@ -6,14 +6,15 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Signal
+from .doc_view import DocView
 
 
-class EditorView(QMainWindow):
+class MainWindow(QMainWindow):
     # 定义信号
-    open_file_triggered = Signal()
-    language_changed = Signal(str)
-    text_changed = Signal(str)
-    cursor_position_changed = Signal()
+    open_file_event = Signal()
+    language_changed_event = Signal(str)
+    text_changed_event = Signal(str)
+    doc_edit_cursor_event = Signal()
 
     def __init__(self):
         super().__init__()
@@ -37,7 +38,7 @@ class EditorView(QMainWindow):
         file_menu = menubar.addMenu("&File")
         open_action = QAction("&Open", self)
         open_action.setShortcut("Ctrl+O")
-        open_action.triggered.connect(self.open_file_triggered.emit)
+        open_action.triggered.connect(self.open_file_event.emit)
         file_menu.addAction(open_action)
 
         # Language 菜单
@@ -46,7 +47,7 @@ class EditorView(QMainWindow):
         for language in self.supported_languages:
             action = QAction(language, self, checkable=True)
             action.triggered.connect(
-                lambda checked, lang=language: self.language_changed.emit(lang)
+                lambda checked, lang=language: self.language_changed_event.emit(lang)
             )
             language_menu.addAction(action)
 
@@ -61,18 +62,11 @@ class EditorView(QMainWindow):
 
         layout = QHBoxLayout(central_widget)
 
-        self.left_edit = QTextEdit()
-        self.right_edit = QTextEdit()
+        self.doc_edit = DocView()
+        self.ast_edit = QTextEdit()
 
-        self.left_edit.setAcceptRichText(True)
-        self.left_edit.setLineWrapMode(QTextEdit.NoWrap)
-        self.left_edit.textChanged.connect(
-            lambda: self.text_changed.emit(self.left_edit.toPlainText())
-        )
-        self.left_edit.cursorPositionChanged.connect(self.cursor_position_changed.emit)
-
-        layout.addWidget(self.left_edit)
-        layout.addWidget(self.right_edit)
+        layout.addWidget(self.doc_edit)
+        layout.addWidget(self.ast_edit)
 
     def update_language_menu(self, language):
         if self.selected_language_action:
@@ -87,9 +81,3 @@ class EditorView(QMainWindow):
                         break
 
         self.language_menu_title.setText(f"&Language: {language}")
-
-    def set_editor_content(self, html_content):
-        self.left_edit.setHtml(html_content)
-
-    def set_plain_text(self, text):
-        self.left_edit.setPlainText(text)
