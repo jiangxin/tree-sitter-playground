@@ -21,6 +21,7 @@ class MainController:
         self.window.language_changed_event.connect(self.set_language)
         self.window.text_changed_event.connect(self.on_text_changed)
         self.window.doc_edit_cursor_event.connect(self.highlight_ast_region)
+        self.window.ast_edit_cursor_event.connect(self.on_ast_edit_cursor_changed)
         self.window.doc_edit.textChanged.connect(
             lambda: self.window.text_changed_event.emit(
                 self.window.doc_edit.toPlainText()
@@ -28,6 +29,9 @@ class MainController:
         )
         self.window.doc_edit.cursorPositionChanged.connect(
             self.window.doc_edit_cursor_event.emit
+        )
+        self.window.ast_edit.cursorPositionChanged.connect(
+            self.window.ast_edit_cursor_event.emit
         )
         self.window.font_size_changed_event.connect(self.update_font_size)
 
@@ -121,3 +125,11 @@ class MainController:
 
     def update_font_size(self, size):
         self.window.set_font_size(size)
+
+    def on_ast_edit_cursor_changed(self):
+        cursor = self.window.ast_edit.textCursor()
+        line_number = cursor.blockNumber()
+        line_range = self.ast.line_range.get(line_number, [-1, -1, -1, -1])
+        print(
+            f"AST line: {line_number}, Line range: {line_range}"
+        )  # 打印 ast_edit 对应行的 line_range 的值
