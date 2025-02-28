@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
     open_file_event: Signal = Signal()
     language_changed_event: Signal = Signal(str)
     text_changed_event: Signal = Signal(str)
+    text_changed_with_delay = Signal(str)
     doc_edit_cursor_event: Signal = Signal()
     ast_edit_cursor_event: Signal = Signal()
     font_size_changed_event: Signal = Signal(int)

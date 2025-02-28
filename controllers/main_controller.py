@@ -2,6 +2,10 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMessageBox,
 )
+from PySide6.QtCore import (
+    QObject,
+    QTimer,
+)
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
@@ -15,11 +19,19 @@ from views.main_window import MainWindow
 DEFAULT_LANGUAGE = "python"
 
 
-class MainController:
+class MainController(QObject):
     def __init__(self, window: MainWindow):
+        super().__init__()
         self.window = window
         self.document = Document()
         self.ast = AST()  # 初始化 AST 对象
+
+        # 创建定时器用于防抖
+        self._timer = QTimer(self)
+        # 设置为单次触发
+        self._timer.setSingleShot(True)
+        self._timer.setInterval(500)
+        self._timer.timeout.connect(self.emit_text_changed)
 
         # 连接信号
         self.window.open_file_event.connect(self.open_file)
@@ -27,10 +39,9 @@ class MainController:
         self.window.text_changed_event.connect(self.on_text_changed)
         self.window.doc_edit_cursor_event.connect(self.highlight_ast_region)
         self.window.ast_edit_cursor_event.connect(self.on_ast_edit_cursor_changed)
-        self.window.doc_edit.textChanged.connect(
-            lambda: self.window.text_changed_event.emit(
-                self.window.doc_edit.toPlainText()
-            )
+        self.window.doc_edit.textChanged.connect(self.handle_text_changed)
+        self.window.text_changed_with_delay.connect(
+            lambda text: self.window.text_changed_event.emit(text)
         )
         self.window.doc_edit.cursorPositionChanged.connect(
             self.window.doc_edit_cursor_event.emit
@@ -39,6 +50,7 @@ class MainController:
             self.window.ast_edit_cursor_event.emit
         )
         self.window.font_size_changed_event.connect(self.update_font_size)
+
         # 重置 Language 菜单
         self.window.language_changed_event.emit(DEFAULT_LANGUAGE)
 
@@ -173,3 +185,12 @@ class MainController:
         doc_edit.setTextCursor(doc_edit_cursor)
         doc_edit.ensureCursorVisible()
         self.window.doc_edit.blockSignals(False)
+
+    def handle_text_changed(self):
+        # 重置定时器
+        self._timer.stop()
+        self._timer.start()
+
+    def emit_text_changed(self):
+        # 发送带延迟的文本变化信号
+        self.window.text_changed_with_delay.emit(self.window.doc_edit.toPlainText())
