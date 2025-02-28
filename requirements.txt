@@ -1,4 +1,2 @@
-PySide6>=6.0.0
-tree-sitter>=0.20.0
-tree-sitter-language-pack>=0.1.0
-pygments>=2.14.0  # 添加 Pygments 依赖
+# Requirements for Python 3.9 and above
+-r requirements/py39.txt
