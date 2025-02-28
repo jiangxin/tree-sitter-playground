@@ -29,17 +29,39 @@
 
 ## 安装和运行
 
-1. 确保已安装 Python 3.9 或更高版本。
-2. 克隆项目仓库：
+本软件用 Python 开发，可以运行在 python 3.6 或更高版本。
+
+首先确保已安装了 Python。
+
+1. 克隆项目仓库：
+
    ```bash
    git clone https://github.com/jiangxin/tree-sitter-playground.git
    cd tree-sitter-playground
    ```
+
+2. 升级 pip。对于 python 3.7 等较低版本，如果pip 不升级，会导致无法找到匹配的 PySide6 安装包。
+
+   ```bash
+   python -m pip install -U pip 
+   ```
+
 3. 安装 Python 依赖：
+
+   对于 Python 3.9 或更高版本，执行：
+
    ```bash
    pip install -r requirements.txt
    ```
+
+   对于 Python 3.6 ~ 3.8 版本，执行：
+
+   ```bash
+   pip install -r requirements/py36.txt
+   ```
+
 4. 运行 tree-sitter-playground：
+
    ```bash
    python tree-sitter-playground.py
    ```
