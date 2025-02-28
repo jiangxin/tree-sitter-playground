@@ -115,6 +115,9 @@ class MainController(QObject):
         self.ast_edit_load(self.document.language, self.document.content)
 
     def ast_edit_load(self, language, content):
+        if not content:
+            self.window.ast_edit.clear()
+            return
         self.ast.load(language, content)
         ast_text = self.ast.get_plain_text()
         self.window.ast_edit.blockSignals(True)
