@@ -12,6 +12,8 @@ from models.ast import AST  # 添加导入语句
 from models.document import Document
 from views.main_window import MainWindow
 
+DEFAULT_LANGUAGE = "python"
+
 
 class MainController:
     def __init__(self, window: MainWindow):
@@ -37,6 +39,8 @@ class MainController:
             self.window.ast_edit_cursor_event.emit
         )
         self.window.font_size_changed_event.connect(self.update_font_size)
+        # 重置 Language 菜单
+        self.window.language_changed_event.emit(DEFAULT_LANGUAGE)
 
     def open_file(self):
         options = QFileDialog.Options()
