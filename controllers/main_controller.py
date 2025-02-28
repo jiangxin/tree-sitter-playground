@@ -24,7 +24,7 @@ class MainController(QObject):
         super().__init__()
         self.window = window
         self.document = Document()
-        self.ast = AST()  # 初始化 AST 对象
+        self.ast = AST()
 
         # 创建定时器用于防抖
         self._timer = QTimer(self)
@@ -118,7 +118,11 @@ class MainController(QObject):
         if not content:
             self.window.ast_edit.clear()
             return
-        self.ast.load(language, content)
+        try:
+            self.ast.load(language, content)
+        except Exception as e:
+            QMessageBox.critical(self.window, "ERROR", f"Error loading AST: {e}")
+            return
         ast_text = self.ast.get_plain_text()
         self.window.ast_edit.blockSignals(True)
         self.window.ast_edit.setPlainText(ast_text)
