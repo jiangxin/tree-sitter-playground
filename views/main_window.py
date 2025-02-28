@@ -54,9 +54,10 @@ class MainWindow(QMainWindow):
         language_menu = menubar.addMenu("&Language")
         self.language_menu_title = language_menu.menuAction()
         for language in self.supported_languages:
-            action = QAction(language, self, checkable=True)
+            action = QAction(language, self)
+            action.setCheckable(True)
             action.triggered.connect(
-                lambda checked, lang=language: self.language_changed_event.emit(lang)
+                (lambda lang: lambda checked: self.language_changed_event.emit(lang))(language)
             )
             language_menu.addAction(action)
 
@@ -64,9 +65,10 @@ class MainWindow(QMainWindow):
         size_menu = menubar.addMenu("&Size")
         size_group = QActionGroup(self, exclusive=True)
         for size in range(10, 39, 2):  # 从 10 到 38，步长为 2
-            action = QAction(str(size), self, checkable=True)
+            action = QAction(str(size), self)
+            action.setCheckable(True)
             action.triggered.connect(
-                lambda checked, s=size: self.font_size_changed_event.emit(s)
+                (lambda s: lambda checked: self.font_size_changed_event.emit(s))(size)
             )
             size_group.addAction(action)
             size_menu.addAction(action)
