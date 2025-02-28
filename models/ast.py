@@ -1,9 +1,9 @@
+import importlib
 from tree_sitter import (
     Language,
     Parser,
     Tree,
 )
-import tree_sitter_language_pack
 from typing import Optional, List
 
 
@@ -15,17 +15,48 @@ class AST:
         self.tree: Optional[Tree] = None
         self.line_range = {}  # 添加 line_range 字段
 
+    def get_language(self, language_name: str) -> Optional[Language]:
+        if language_name == "c_sharp":
+            language_name = "csharp"
+        for module_name in [
+            "tree_sitter_language_pack",
+            "tree_sitter_languages",
+            f"tree_sitter_{language_name}",
+        ]:
+            try:
+                module = importlib.import_module(module_name)
+            except Exception:
+                continue
+            if not module:
+                continue
+            if hasattr(module, "get_language"):
+                return module.get_language(language_name)
+            elif hasattr(module, "language"):
+                language = module.language()
+                if isinstance(language, Language):
+                    return language
+                else:
+                    return Language(language)
+            return None
+
     def load(self, language_name: str, content):
         self.content = (
             content.encode("utf8", errors="replace")
             if isinstance(content, str)
             else content
         )
-        if language_name == "c_sharp":
-            language_name = "csharp"
-        self.language = tree_sitter_language_pack.get_language(language_name)
+        self.language = self.get_language(language_name)
+        if not self.language:
+            raise Exception(
+                f"cannot find tree-sitter driver for language '{language_name}'"
+            )
         self.parser = Parser()
-        self.parser.language = self.language
+        # For backward compatibility, use deprecated "set_language" for old version of tree-sitter
+        if hasattr(self.parser, "set_language"):
+            self.parser.set_language(self.language)
+        else:
+            # New version of tree-sitter use language attribute.
+            self.parser.language = self.language
         data = (
             content.encode("utf8", errors="replace")
             if isinstance(content, str)
