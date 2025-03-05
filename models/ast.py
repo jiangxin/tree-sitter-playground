@@ -1,10 +1,7 @@
 import importlib
-from tree_sitter import (
-    Language,
-    Parser,
-    Tree,
-)
-from typing import Optional, List
+from typing import List, Optional
+
+from tree_sitter import Language, Parser, Tree
 
 
 class AST:

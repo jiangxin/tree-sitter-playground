@@ -1,16 +1,10 @@
-from PySide6.QtWidgets import (
-    QFileDialog,
-    QMessageBox,
-)
-from PySide6.QtCore import (
-    QObject,
-    QTimer,
-)
 from pygments import highlight
-from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_by_name
 from pygments.styles import get_style_by_name
+from PySide6.QtCore import QObject, QTimer
 from PySide6.QtGui import QTextCursor
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from models.ast import AST  # 添加导入语句
 from models.document import Document

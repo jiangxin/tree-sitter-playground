@@ -1,13 +1,28 @@
 [tool.ruff]
 line-length = 88
 
-[tool.ruff.lint]
-select = [
-    "E",  # pycodestyle errors
-    "F",  # pyflakes
-    "W",  # pycodestyle warnings
-]
-ignore = [
-    "E203",  # whitespace before ':'
-    "E501",  # line too long
+[tool.black]
+# Default line length for black
+line-length = 88
+# Specify directories to ignore (using glob patterns)
+exclude = '''
+(
+    /(
+        \.venv|
+        \.venv-.*
+    )/
+)
+'''
+
+[tool.isort]
+# Ensure consistent with black's line length
+line_length = 88
+# Choose a multi-line output style compatible with black (3 means new line before import names)
+multi_line_output = 3
+# Ensure trailing commas for consistency with black
+include_trailing_comma = true 
+# Specify directories to ignore
+skip = [
+    ".venv",
+    ".venv-*"
 ]

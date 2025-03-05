@@ -1,17 +1,10 @@
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QTextEdit,
-    QWidget,
-    QHBoxLayout,
-)
-from PySide6.QtGui import (
-    QAction,
-    QActionGroup,
-    QFont,
-)
 from PySide6.QtCore import Signal
-from .doc_view import DocView
+from PySide6.QtGui import QAction, QActionGroup, QFont
+from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QTextEdit, QWidget
+
 from models.lang_map import lang_map
+
+from .doc_view import DocView
 
 
 class MainWindow(QMainWindow):
@@ -57,7 +50,9 @@ class MainWindow(QMainWindow):
             action = QAction(language, self)
             action.setCheckable(True)
             action.triggered.connect(
-                (lambda lang: lambda checked: self.language_changed_event.emit(lang))(language)
+                (lambda lang: lambda checked: self.language_changed_event.emit(lang))(
+                    language
+                )
             )
             language_menu.addAction(action)
 

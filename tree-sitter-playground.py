@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import sys
-from PySide6.QtWidgets import QApplication
+
 from PySide6.QtCore import Qt
-from views.main_window import MainWindow
+from PySide6.QtWidgets import QApplication
+
 from controllers.main_controller import MainController
+from views.main_window import MainWindow
 
 
 def main():

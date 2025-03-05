@@ -1,9 +1,25 @@
-all: style lint
-	
-# 格式化代码
-style:
-	black .
+define message
+	@echo "### $(1)"
+endef
 
-# 静态代码检查
-lint:
-	ruff check .
+.PHONY: all
+all: format ruff
+
+.PHONY: format
+format: isort black
+
+.PHONY: black
+black:
+	$(call message, Format code using black...)
+	@black .
+
+.PHONY: isort
+isort:
+	$(call message, Format code using isort...)
+	@isort  . --interactive
+
+.PHONY: lint ruff
+lint: ruff
+ruff:
+	$(call message, Run lint: ruff check .)
+	@python -m ruff check .
