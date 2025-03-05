@@ -1,9 +1,10 @@
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QAction, QActionGroup, QFont
-from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QTextEdit, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QWidget
 
 from models.lang_map import lang_map
 
+from .ast_view import AstView
 from .doc_view import DocView
 
 
@@ -90,7 +91,7 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout(central_widget)
 
         self.doc_edit = DocView()
-        self.ast_edit = QTextEdit()
+        self.ast_edit = AstView()
 
         layout.addWidget(self.doc_edit)
         layout.addWidget(self.ast_edit)
