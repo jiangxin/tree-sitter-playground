@@ -1,5 +1,5 @@
-from PySide6.QtCore import Signal
-from PySide6.QtGui import QAction, QActionGroup, QFont
+from PySide6.QtCore import QEvent, Signal
+from PySide6.QtGui import QAction, QActionGroup, QFont, QPalette
 from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QWidget
 
 from models.lang_map import lang_map
@@ -16,6 +16,7 @@ class MainWindow(QMainWindow):
     doc_edit_cursor_event: Signal = Signal()
     ast_edit_cursor_event: Signal = Signal()
     font_size_changed_event: Signal = Signal(int)
+    theme_changed_event: Signal = Signal(bool)
 
     def __init__(self):
         super().__init__()
@@ -99,7 +100,6 @@ class MainWindow(QMainWindow):
     def update_language_menu(self, language):
         if self.selected_language_action:
             self.selected_language_action.setChecked(False)
-
         for action in self.menuBar().actions():
             if action.text().startswith("&Language"):
                 for sub_action in action.menu().actions():
@@ -107,5 +107,15 @@ class MainWindow(QMainWindow):
                         sub_action.setChecked(True)
                         self.selected_language_action = sub_action
                         break
-
         self.language_menu_title.setText(f"&Language: {language}")
+
+    def changeEvent(self, event):
+        if event.type() == QEvent.PaletteChange:
+            is_dark_mode = self.isDarkMode()
+            self.theme_changed_event.emit(is_dark_mode)
+        super().changeEvent(event)
+
+    def isDarkMode(self):
+        app_palette = self.style().standardPalette()
+        text_color = app_palette.color(QPalette.WindowText)
+        return text_color.lightness() > 128

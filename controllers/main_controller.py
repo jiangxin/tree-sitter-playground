@@ -2,8 +2,8 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 from pygments.styles import get_style_by_name
-from PySide6.QtCore import QObject, QTimer
-from PySide6.QtGui import QTextCursor
+from PySide6.QtCore import QObject, Qt, QTimer
+from PySide6.QtGui import QPalette, QTextCursor
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from models.ast import AST  # 添加导入语句
@@ -44,9 +44,13 @@ class MainController(QObject):
             self.window.ast_edit_cursor_event.emit
         )
         self.window.font_size_changed_event.connect(self.update_font_size)
+        self.window.theme_changed_event.connect(self.handle_theme_changed)
 
         # 重置 Language 菜单
         self.window.language_changed_event.emit(DEFAULT_LANGUAGE)
+
+        # 初始化主题
+        self.handle_theme_changed(self.window.isDarkMode())
 
     def open_file(self):
         options = QFileDialog.Options()
@@ -195,3 +199,19 @@ class MainController(QObject):
     def emit_text_changed(self):
         # 发送带延迟的文本变化信号
         self.window.text_changed_with_delay.emit(self.window.doc_edit.toPlainText())
+
+    def handle_theme_changed(self, is_dark_mode):
+        # 获取应用程序实例的调色板
+        palette = self.window.doc_edit.palette()
+        # 根据主题设置颜色
+        if is_dark_mode:
+            # 深色模式
+            palette.setColor(QPalette.Base, Qt.black)  # 背景色
+            palette.setColor(QPalette.Text, Qt.white)  # 文本色
+        else:
+            # 浅色模式
+            palette.setColor(QPalette.Base, Qt.white)  # 背景色
+            palette.setColor(QPalette.Text, Qt.black)  # 文本色
+
+        self.window.doc_edit.setPalette(palette)
+        self.window.ast_edit.setPalette(palette)

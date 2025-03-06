@@ -6,6 +6,8 @@ class DocView(QTextEdit):
         super().__init__()
         self.setAcceptRichText(True)
         self.setLineWrapMode(QTextEdit.NoWrap)
+        # 启用自动填充背景
+        self.setAutoFillBackground(True)
 
     def setHtml(self, html):
         # 保存当前光标位置
