@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QTextEdit
 class AstView(QTextEdit):
     def __init__(self):
         super().__init__()
+        self.setAcceptRichText(True)
         self.setFontFamily("Courier New")  # 设置等宽字体
         self.setLineWrapMode(QTextEdit.NoWrap)
         # 启用自动填充背景

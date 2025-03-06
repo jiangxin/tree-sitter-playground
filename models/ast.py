@@ -91,7 +91,7 @@ class AST:
                 "{}{}{}{} [{}, {}] - [{}, {}]".format(
                     "  " * depth,
                     f"{field_name}: " if field_name else "",
-                    "" if node.is_named else ". ",
+                    "" if node.is_named else "[anonymous] ",
                     node_type,
                     start_point[0] + 1,
                     start_point[1],

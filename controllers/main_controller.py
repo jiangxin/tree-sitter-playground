@@ -1,3 +1,5 @@
+import re
+
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
@@ -10,6 +12,9 @@ from models.document import Document
 from views.main_window import MainWindow
 
 DEFAULT_LANGUAGE = "python"
+ast_pattern = re.compile(
+    r"^(?P<indent>\s*)(?P<anonymous>\[anonymous\] )?((?P<name>.+): )?(?P<type>.+) (?P<range>\[[0-9]+, [0-9]+\] - \[[0-9]+, [0-9]+\])(?P<suffix>.*)$"
+)
 
 
 class MainController(QObject):
@@ -133,9 +138,98 @@ class MainController(QObject):
         except Exception as e:
             QMessageBox.critical(self.window, "ERROR", f"Error loading AST: {e}")
             return
+
         ast_text = self.ast.get_plain_text()
+
+        # 将普通文本转换为HTML格式
+        html_lines = []
+        for line in ast_text.split("\n"):
+            match = ast_pattern.match(line)
+            if not match:
+                html_lines = f"<div style='normal'>{line}</div>"
+                continue
+            anonymous = match.group("anonymous")
+            indent = match.group("indent")
+            name = match.group("name")
+            type = match.group("type")
+            range = match.group("range")
+            suffix = match.group("suffix")
+            style = "anonymous" if anonymous else "normal"
+            html_line = "".join(
+                [
+                    f"<div style='{style}'>",
+                    f"<span style='indent'>{indent}</span>" if indent else "",
+                    f"<span style='name'>{name}</span>: " if name else "",
+                    f"<span style='type'>{type}</span>",
+                    " ",
+                    f"<span style='range'>{range}</span>",
+                    suffix,
+                    "</div>",
+                ]
+            )
+            html_lines.append(html_line)
+
+        html_head = """
+        <html>
+        <head>
+            <style>
+                /* 基础样式 */
+                body {
+                    font-family: Arial, sans-serif;
+                }
+                
+                /* div 样式 */
+                div {
+                    line-height: 1.5;
+                }
+
+                /* 普通节点样式 */
+                div[style='normal'] {
+                    display: block;
+                }
+
+                /* 匿名节点样式 */
+                div[style='anonymous'] {
+                    display: block;
+                    font-style: italic;
+                    opacity: 0.6;
+                }
+
+                /* 匿名节点中的类型字段样式 */
+                div[style='anonymous'] span[style='type'] {
+                    color: #808080;
+                }
+
+                /* 缩进空格样式 */
+                span[style='indent'] {
+                    font-family: 'Courier New', monospace;
+                    white-space: pre;
+                    display: inline-block;
+                }
+                
+                /* 名称字段样式 */
+                span[style='name'] {
+                    color: #569cd6;
+                    font-weight: bold;
+                }
+                
+                /* 范围字段样式 */
+                span[style='range'] {
+                    color: #808080;
+                }
+            </style>
+        </head>
+        <body>
+        """
+        html_tail = """
+        </body>
+        </html>
+        """
+        html_body = "\n".join(html_lines)
+        html_content = f"{html_head}{html_body}{html_tail}"
+
         self.window.ast_edit.blockSignals(True)
-        self.window.ast_edit.setPlainText(ast_text)
+        self.window.ast_edit.setHtml(html_content)
         self.window.ast_edit.blockSignals(False)
 
     def highlight_ast_region(self):
