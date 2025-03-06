@@ -1,6 +1,6 @@
 from PySide6.QtCore import QEvent, Signal
 from PySide6.QtGui import QAction, QActionGroup, QFont, QPalette
-from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QWidget
+from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QSplitter, QWidget
 
 from models.lang_map import lang_map
 
@@ -90,12 +90,31 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         layout = QHBoxLayout(central_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        splitter = QSplitter()
 
         self.doc_edit = DocView()
         self.ast_edit = AstView()
 
-        layout.addWidget(self.doc_edit)
-        layout.addWidget(self.ast_edit)
+        splitter.addWidget(self.doc_edit)
+        splitter.addWidget(self.ast_edit)
+
+        splitter.setSizes([self.width() // 2, self.width() // 2])
+
+        splitter.setStyleSheet(
+            """
+            QSplitter::handle {
+                background-color: #ccc;
+                width: 2px;
+            }
+            QSplitter::handle:hover {
+                background-color: #999;
+            }
+        """
+        )
+
+        layout.addWidget(splitter)
 
     def update_language_menu(self, language):
         if self.selected_language_action:
