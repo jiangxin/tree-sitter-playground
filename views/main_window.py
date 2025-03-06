@@ -38,14 +38,14 @@ class MainWindow(QMainWindow):
     def create_menus(self):
         menubar = self.menuBar()
 
-        # File 菜单
+        # File menu
         file_menu = menubar.addMenu("&File")
         open_action = QAction("&Open", self)
         open_action.setShortcut("Ctrl+O")
         open_action.triggered.connect(self.open_file_event.emit)
         file_menu.addAction(open_action)
 
-        # Language 菜单
+        # Language menu
         language_menu = menubar.addMenu("&Language")
         self.language_menu_title = language_menu.menuAction()
         for language in self.supported_languages:
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
             )
             language_menu.addAction(action)
 
-        # Size 菜单
+        # Size menu
         size_menu = menubar.addMenu("&Size")
         size_group = QActionGroup(self, exclusive=True)
         for size in range(10, 39, 2):  # 从 10 到 38，步长为 2
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
                 action.setChecked(True)
         # size_group.triggered.connect(lambda action: self.font_size_changed_event.emit(int(action.text())))
 
-        # View 和 Help 菜单
+        # View and Help menus
         menubar.addMenu("&View")
         help_menu = menubar.addMenu("&Help")
         help_menu.addAction(QAction("&About", self))

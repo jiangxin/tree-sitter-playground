@@ -5,7 +5,7 @@ class AstView(QTextEdit):
     def __init__(self):
         super().__init__()
         self.setAcceptRichText(True)
-        self.setFontFamily("Courier New")  # 设置等宽字体
+        self.setFontFamily("Courier New")  # Set monospace font
         self.setLineWrapMode(QTextEdit.NoWrap)
-        # 启用自动填充背景
+        # Enable auto background fill
         self.setAutoFillBackground(True)

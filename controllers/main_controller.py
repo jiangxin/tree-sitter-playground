@@ -24,14 +24,14 @@ class MainController(QObject):
         self.document = Document()
         self.ast = AST()
 
-        # 创建定时器用于防抖
+        # Create timer for debouncing
         self._timer = QTimer(self)
-        # 设置为单次触发
+        # Set single shot
         self._timer.setSingleShot(True)
         self._timer.setInterval(500)
         self._timer.timeout.connect(self.emit_text_changed)
 
-        # 连接信号
+        # Connect signals
         self.window.open_file_event.connect(self.open_file)
         self.window.language_changed_event.connect(self.set_language)
         self.window.text_changed_event.connect(self.on_text_changed)
@@ -50,10 +50,10 @@ class MainController(QObject):
         self.window.font_size_changed_event.connect(self.update_font_size)
         self.window.theme_changed_event.connect(self.handle_theme_changed)
 
-        # 重置 Language 菜单
+        # Reset Language menu
         self.window.language_changed_event.emit(DEFAULT_LANGUAGE)
 
-        # 初始化主题
+        # Initialize theme
         self.handle_theme_changed(self.window.isDarkMode())
 
     def open_file(self):
@@ -307,17 +307,17 @@ class MainController(QObject):
         self.window.text_changed_with_delay.emit(self.window.doc_edit.toPlainText())
 
     def handle_theme_changed(self, is_dark_mode):
-        # 获取应用程序实例的调色板
+        # Get application instance palette
         palette = self.window.doc_edit.palette()
-        # 根据主题设置颜色
+        # Set colors based on theme
         if is_dark_mode:
-            # 深色模式
-            palette.setColor(QPalette.Base, Qt.black)  # 背景色
-            palette.setColor(QPalette.Text, Qt.white)  # 文本色
+            # Dark mode
+            palette.setColor(QPalette.Base, Qt.black)  # Background color
+            palette.setColor(QPalette.Text, Qt.white)  # Text color
         else:
-            # 浅色模式
-            palette.setColor(QPalette.Base, Qt.white)  # 背景色
-            palette.setColor(QPalette.Text, Qt.black)  # 文本色
+            # Light mode
+            palette.setColor(QPalette.Base, Qt.white)  # Background color
+            palette.setColor(QPalette.Text, Qt.black)  # Text color
 
         self.window.doc_edit.setPalette(palette)
         self.window.ast_edit.setPalette(palette)

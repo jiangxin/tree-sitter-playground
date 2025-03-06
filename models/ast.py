@@ -10,7 +10,7 @@ class AST:
         self.language: Optional[Language] = None
         self.parser: Optional[Parser] = Parser()
         self.tree: Optional[Tree] = None
-        self.line_range = {}  # 添加 line_range 字段
+        self.line_range = {}  # Add line_range field
 
     def get_language(self, language_name: str) -> Optional[Language]:
         if language_name == "c_sharp":

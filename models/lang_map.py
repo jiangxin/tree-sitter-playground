@@ -47,11 +47,11 @@ class LangMap(dict):
                 "less": "less",
                 "vue": "vue",
                 "mjs": "javascript",
-                "ada": "ada",  # Ada源代码文件的通用扩展名
-                "adb": "ada",  # Ada的主体文件扩展名，用于存放程序的实现部分
-                "ads": "ada",  # Ada的规范文件扩展名，用于存放程序的接口部分
-                "agda": "agda",  # Agda 是一种用于依赖类型编程的编程语言
-                "cls": "apex",  # 用于定义 Apex 类的文件扩展名
+                "ada": "ada",  # Ada source code file generic extension
+                "adb": "ada",  # Ada main file extension, used to store program implementation part
+                "ads": "ada",  # Ada specification file extension, used to store program interface part
+                "agda": "agda",  # Agda is a programming language for dependent type programming
+                "cls": "apex",  # File extension used to define Apex class files
                 "sh": "bash",
                 "beancount": "beancount",
                 "capnp": "capnp",
@@ -61,23 +61,23 @@ class LangMap(dict):
                 "lisp": "commonlisp",
                 "lsp": "commonlisp",
                 "cu": "cuda",
-                "cuh": "cuda",  # CUDA 头文件，类似于 .h 文件
+                "cuh": "cuda",  # CUDA header file, similar to .h file
                 "dart": "dart",
                 "d": "d",
-                "di": "d",  # D 语言接口文件，通常用于定义只包含声明的文件，不包含实现
+                "di": "d",  # D language interface file, usually used to define files that only contain declarations, not implementation
                 "dot": "dot",
                 "ex": "elixir",
-                "exs": "elixir",  # 这个扩展名用于编写 Elixir 脚本文件
+                "exs": "elixir",  # This extension is used to write Elixir script files
                 "elm": "elm",
                 "el": "elisp",
                 # "eno": "eno",
                 "erb": "embedded_template",
                 "ejs": "embedded_template",
                 "erl": "erlang",
-                "hrl": "erlang",  # 头文件的扩展名，通常用于存放 Erlang 中的宏定义和共享的数据结构等
+                "hrl": "erlang",  # File extension for header files, usually used to store macro definitions and shared data structures in Erlang
                 "fnl": "fennel",
                 "fish": "fish",
-                "f": "formula",  # 传统的 Fortran 77 源代码文件扩展名，用于包含固定格式的 Fortran 源代码。
+                "f": "formula",  # Traditional Fortran 77 source code file extension, used to include fixed format Fortran source code.
                 "frm": "formula",
                 "f90": "fortran",
                 "f95": "fortran",
@@ -129,7 +129,7 @@ class LangMap(dict):
                 "pl": "perl",
                 "pgn": "pgn",
                 "ps1": "powershell",
-                "psm1": "powershell",  # PowerShell 模块文件，通常用于封装和组织 PowerShell 函数
+                "psm1": "powershell",  # PowerShell module file, usually used to package and organize PowerShell functions
                 "proto": "proto",
                 "qmljs": "qmljs",
                 "qc": "quakec",
@@ -151,14 +151,14 @@ class LangMap(dict):
                 "sc": "supercollider",
                 "tact": "tact",
                 "thrift": "thrift",
-                "toml": "toml",  # Cargo.toml: Cargo 项目配置文件
+                "toml": "toml",  # Cargo.toml: Cargo project configuration file
                 "ttl": "turtle",
                 "ungrammar": "ungrammar",
                 "usd": "usd",
                 "v": "verilog",
-                "vh": "verilog",  # Verilog头文件的扩展名
-                "sv": "verilog",  # SystemVerilog源代码文件的扩展名
-                "svh": "verilog",  # SystemVerilog源代码文件的扩展名
+                "vh": "verilog",  # Verilog header file extension
+                "sv": "verilog",  # SystemVerilog source code file extension
+                "svh": "verilog",  # SystemVerilog source code file extension
                 "vhdl": "vhdl",
                 "wasm": "wast",
                 "wat": "wast",
@@ -168,7 +168,7 @@ class LangMap(dict):
                 "yang": "yang",
                 "yuck": "yuck",
                 "zig": "zig",
-                "zig_test": "zig",  # 用于编写 Zig 测试文件的扩展名
+                "zig_test": "zig",  # Extension used to write Zig test files
                 "svelte": "svelte",
             }
         )

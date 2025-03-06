@@ -10,15 +10,15 @@ class DocView(QTextEdit):
         self.setAutoFillBackground(True)
 
     def setHtml(self, html):
-        # 保存当前光标位置
+        # Save current cursor position
         self._cursor_position = self.textCursor().position()
 
-        # 设置 HTML
+        # Set HTML
         super().setHtml(html)
 
-        # 恢复光标位置
+        # Restore cursor position
         cursor = self.textCursor()
-        # 确保位置不超过文本长度
+        # Ensure position doesn't exceed text length
         position = min(self._cursor_position, len(self.toPlainText()))
         cursor.setPosition(position)
         self.setTextCursor(cursor)
