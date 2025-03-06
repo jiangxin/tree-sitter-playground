@@ -3,7 +3,7 @@ define message
 endef
 
 .PHONY: all
-all: format ruff
+all: format ruff test
 
 .PHONY: format
 format: isort black
@@ -23,3 +23,7 @@ lint: ruff
 ruff:
 	$(call message, Run lint: ruff check .)
 	@python -m ruff check .
+
+.PHONY: test
+test:
+	pytest tests
