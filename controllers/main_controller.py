@@ -1,7 +1,6 @@
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
-from pygments.styles import get_style_by_name
 from PySide6.QtCore import QObject, Qt, QTimer
 from PySide6.QtGui import QPalette, QTextCursor
 from PySide6.QtWidgets import QFileDialog, QMessageBox
@@ -96,11 +95,24 @@ class MainController(QObject):
             if language == "c_sharp":
                 language = "csharp"
             lexer = get_lexer_by_name(language, stripall=True)
+            palette = self.window.doc_edit.palette()
+            # 获取系统背景色
+            bg_color = palette.color(QPalette.Base).name()
+            # 获取系统文本色
+            text_color = palette.color(QPalette.Text).name()
+
+            # 创建自定义样式
+            style = {
+                "bgcolor": bg_color,
+                "color": text_color,
+            }
             formatter = HtmlFormatter(
-                style=get_style_by_name("colorful"),
+                style="default",
                 full=True,
                 noclasses=True,
                 linenos=False,
+                nobackground=True,
+                style_defs=style,
             )
             highlighted_code = highlight(self.document.content, lexer, formatter)
             self.window.doc_edit.setHtml(highlighted_code)
