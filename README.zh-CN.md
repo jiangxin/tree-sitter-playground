@@ -1,5 +1,7 @@
 # tree-sitter-playground
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 [tree-sitter](https://tree-sitter.github.io/tree-sitter/) 是一个常用的代码语法解析工具，支持非常多的开发语言，能够将代码解析为抽象语法树（AST）。在官方网站上提供了一个 [在线解析工具 playground](https://tree-sitter.github.io/tree-sitter/7-playground.html)，可以实时将代码转换为 AST。
 
 但是官方的 playground 存在一些局限：
@@ -43,7 +45,7 @@
 2. 升级 pip。对于 python 3.7 等较低版本，如果pip 不升级，会导致无法找到匹配的 PySide6 安装包。
 
    ```bash
-   python -m pip install -U pip 
+   python -m pip install -U pip
    ```
 
 3. 安装 Python 依赖：
