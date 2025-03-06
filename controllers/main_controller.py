@@ -4,7 +4,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 from PySide6.QtCore import QObject, Qt, QTimer
-from PySide6.QtGui import QPalette, QTextCursor
+from PySide6.QtGui import QColor, QPalette, QTextCursor
 from PySide6.QtWidgets import QFileDialog, QMessageBox
 
 from models.ast import AST  # 添加导入语句
@@ -30,6 +30,13 @@ class MainController(QObject):
         self._timer.setSingleShot(True)
         self._timer.setInterval(500)
         self._timer.timeout.connect(self.emit_text_changed)
+
+        # Add blink animation timer
+        self._blink_timer = QTimer(self)
+        self._blink_timer.setInterval(200)  # 200ms per blink state
+        self._blink_timer.timeout.connect(self._blink_selection)
+        self._blink_count = 0
+        self._blinking_editor = None
 
         # Connect signals
         self.window.open_file_event.connect(self.open_file)
@@ -259,6 +266,8 @@ class MainController(QObject):
                 )
                 ast_edit.setTextCursor(ast_edit_cursor)
                 ast_edit.ensureCursorVisible()
+                # Start blink animation
+                self._start_blink_animation(ast_edit)
         self.window.ast_edit.blockSignals(False)
 
     def update_font_size(self, size):
@@ -295,6 +304,8 @@ class MainController(QObject):
         doc_edit_cursor.setPosition(end_position, QTextCursor.KeepAnchor)
         doc_edit.setTextCursor(doc_edit_cursor)
         doc_edit.ensureCursorVisible()
+        # Start blink animation
+        self._start_blink_animation(doc_edit)
         self.window.doc_edit.blockSignals(False)
 
     def handle_text_changed(self):
@@ -321,3 +332,43 @@ class MainController(QObject):
 
         self.window.doc_edit.setPalette(palette)
         self.window.ast_edit.setPalette(palette)
+
+    def _set_selection_colors(self, bg_color, text_color):
+        if self._blinking_editor:
+            # Set colors using stylesheet to override system behavior
+            style = f"""
+                QTextEdit {{
+                    selection-background-color: {bg_color.name()};
+                    selection-color: {text_color.name()};
+                }}
+            """
+            self._blinking_editor.setStyleSheet(style)
+
+    def _start_blink_animation(self, editor):
+        self._blink_timer.stop()  # Stop any ongoing animation
+        self._blink_count = 0
+        self._blinking_editor = editor
+        # Clear any existing stylesheet before starting animation
+        editor.setStyleSheet("")
+        self._blink_timer.start()
+
+    def _blink_selection(self):
+        if (
+            not self._blinking_editor or self._blink_count >= 4
+        ):  # 2 blinks (on/off) = 4 states
+            if self._blinking_editor:
+                # Clear stylesheet to restore system colors
+                self._blinking_editor.setStyleSheet("")
+            self._blink_timer.stop()
+            self._blink_count = 0
+            self._blinking_editor = None
+            return
+
+        if self._blink_count % 2 == 0:
+            # Highlight state - yellow background with black text
+            self._set_selection_colors(QColor(Qt.yellow), QColor(Qt.black))
+        else:
+            # Normal state - clear stylesheet to use system colors
+            self._blinking_editor.setStyleSheet("")
+
+        self._blink_count += 1
