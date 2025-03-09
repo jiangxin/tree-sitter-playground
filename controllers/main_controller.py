@@ -175,6 +175,11 @@ class MainController(QObject):
 
         # 获取文本块并转换为 bytes 以计算正确的长度
         block = doc_edit.document().findBlockByLineNumber(start_line)
+        if not block.isValid():
+            QMessageBox.critical(
+                self.window, "ERROR", f"The start_line '{start_line}' is not valid"
+            )
+            return
         block_bytes = bytes(block.text(), "utf-8", errors="replace")
         start_position = block.position() + len(
             block_bytes[:start_column].decode("utf-8", errors="replace")
@@ -182,11 +187,25 @@ class MainController(QObject):
 
         # 修改: 从 end_line 获取文本块以计算 end_position
         end_block = doc_edit.document().findBlockByLineNumber(end_line)
-        end_block_bytes = bytes(end_block.text(), "utf-8", errors="replace")
-        end_position = end_block.position() + len(
-            end_block_bytes[:end_column].decode("utf-8", errors="replace")
-        )
-
+        if not end_block.isValid() and end_line > 0:
+            # The "end_line" is at the end of file with an empty line,
+            # calculate end_position by visiting previous line.
+            while not end_block.isValid() and end_line > 0:
+                end_line -= 1
+                end_block = doc_edit.document().findBlockByLineNumber(end_line)
+            end_position = end_block.position() + len(end_block.text())
+        else:
+            end_block_bytes = bytes(end_block.text(), "utf-8", errors="replace")
+            end_position = end_block.position() + len(
+                end_block_bytes[:end_column].decode("utf-8", errors="replace")
+            )
+        if end_position < start_position:
+            QMessageBox.critical(
+                self.window,
+                "ERROR",
+                f"Wrong end position '{end_position}' less than start position '{start_position}' The start_line '{start_line}'",
+            )
+            return
         doc_edit_cursor.setPosition(start_position)
         doc_edit_cursor.setPosition(end_position, QTextCursor.KeepAnchor)
         doc_edit.setTextCursor(doc_edit_cursor)
