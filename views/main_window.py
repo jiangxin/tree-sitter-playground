@@ -2,7 +2,7 @@ from PySide6.QtCore import QEvent, Signal
 from PySide6.QtGui import QAction, QActionGroup, QFont, QPalette
 from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QSplitter, QWidget
 
-from models.lang_map import lang_map
+from models.lang_map import supported_languages
 
 from .ast_view import AstView
 from .doc_view import DocView
@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.supported_languages = sorted(set(lang_map.values()))
+        self.supported_languages = supported_languages
         self.selected_language_action = None
         self.language_menu_title = None
         self.font_size = 18

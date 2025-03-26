@@ -1,7 +1,7 @@
 import pytest
 
 from models.document import Document
-from models.lang_map import lang_map
+from models.lang_map import get_language, supported_languages
 
 
 def test_document_initialization():
@@ -28,15 +28,15 @@ def test_set_language_from_extension():
     doc.file_path = "test.unknown"
     with pytest.raises(Exception) as exc_info:
         doc.set_language_from_extension()
-    assert "unknown file extension" in str(exc_info.value)
+    assert "unknown language for file: " in str(exc_info.value)
 
 
 def test_supported_languages():
     # Verify that all mapped languages are unique
-    languages = set(lang_map.values())
-    assert len(languages) > 0
+    assert len(supported_languages) > 0
 
     # Test some common extensions
-    assert lang_map["py"] == "python"
-    assert lang_map["js"] == "javascript"
-    assert lang_map["cpp"] == "cpp"
+    assert get_language("test.py") == "python"
+    assert get_language("test.js") == "javascript"
+    assert get_language("test.cpp") == "cpp"
+    assert get_language("Dockerfile") == "dockerfile"
