@@ -75,7 +75,9 @@ class AST:
             end_point = node.end_point
             node_type = node.type
             field_name = (
-                node.parent.field_name_for_child(index) if node.parent else None
+                node.parent.field_name_for_child(index)
+                if node.parent and node.parent.child_count > index
+                else None
             )
 
             # 存储 start_point 和 end_point 到 line_range

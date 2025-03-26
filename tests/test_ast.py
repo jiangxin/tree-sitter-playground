@@ -12,6 +12,10 @@ class MockNode:
         for child in self.children:
             child.parent = self
 
+    @property
+    def child_count(self):
+        return len(self.children)
+
     def field_name_for_child(self, index):
         return None
 
