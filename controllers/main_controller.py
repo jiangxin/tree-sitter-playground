@@ -153,7 +153,7 @@ class MainController(QObject):
         for line in ast_text.split("\n"):
             match = ast_pattern.match(line)
             if not match:
-                html_lines = f"<div style='normal'>{line}</div>"
+                html_lines.append(f"<div style='normal'>{line}</div>")
                 continue
             anonymous = match.group("anonymous")
             indent = match.group("indent")
