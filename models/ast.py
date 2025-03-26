@@ -99,7 +99,7 @@ class AST:
                     start_point[1],
                     end_point[0] + 1,
                     end_point[1],
-                )
+                ).replace("\n", "\\n")
             )
 
             # Add children to the stack with incremented depth and original index
